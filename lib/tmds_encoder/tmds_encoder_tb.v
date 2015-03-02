@@ -64,6 +64,11 @@ module tmds_encoder_tb ();
         #100 $finish;
     end
 
+
+/**************************************************************/
+/* The following can be left as-is unless necessary to change */
+/**************************************************************/
+
     // Cycle Counter
     always @ (posedge clock)
         cycle <= cycle + 1;
@@ -73,24 +78,27 @@ module tmds_encoder_tb ();
 
 /*
   Conditional Environment Settings for the following:
-    - Icarus Varilog
+    - Icarus Verilog
     - VCS
     - Altera Modelsim
     - Xilinx ISIM
 */
+// Icarus Verilog
 `ifdef IVERILOG
-    initial $dumpfile("dump.vcd");
+    initial $dumpfile("vcdbasic.vcd");
     initial $dumpvars();
-`else
-    `ifdef VCS
-        initial $vcdpluson;
-    `else
-        // code for simulation with modelsim
-        `ifdef MODEL_TECH
-        `else
-            `ifdef XILINX_ISIM
-            `endif
-        `endif
-    `endif
+`endif
+
+// VCS
+`ifdef VCS
+    initial $vcdpluson;
+`endif
+
+// Altera Modelsim
+`ifdef MODEL_TECH
+`endif
+
+// Xilinx ISIM
+`ifdef XILINX_ISIM
 `endif
 endmodule
