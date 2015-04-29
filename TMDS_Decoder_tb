@@ -1,0 +1,81 @@
+`include "tmds_encoder.v"
+/*
+----------------------------------------
+Stereoscopic Vision System
+Senior Design Project - Team 11
+California State University, Sacramento
+Spring 2015 / Fall 2015
+----------------------------------------
+TMDS DECODER Testbench
+Authors:  MIAD ROUHANI
+Description:
+  Testbench for TMDS DECODER
+*/
+module tmds_decoder_tb;
+
+	reg clk,rst; reg[9:0] datain;
+	wire [7:0] tmdsout; wire [1:0] crtl; wire de; 
+	reg [15:0] cycle;
+	 
+	 
+	 tmds_decoder #() tmds_decoder (.clk(clock), .reset(reset), .data(dat), .de(dataen), .data(data), .crtl(crtl) .tmds(tmds));
+
+	initial
+		begin
+		
+		cycle <= 0;
+        reset <= 1'b0;
+        datain <= 10'b0000000000;
+		
+       
+
+
+
+	initial
+	begin
+		
+		$monitor("%t, CYCLE: %d,  DATAIN: %b, TMDSOUT: %b, CTRL: %b, DE: %b", $realtime, cycle, datain, tmdsout, crtl,de);
+	
+		#1
+        reset <= 1'b1;
+
+        // Initial clock setting
+        #10
+        clock <= 1'b0;
+	
+        #10 datain <= 10'b1101010100;
+        #10 datain <= 10'b0010101011;
+        #10 datain <= 10'b0101010100;
+        #10 datain <= 10'b1010101011;
+        #10 datain <= 2'b00000000000;
+		
+        #100 $finish;
+    end
+
+
+    // Cycle Counter
+    always @ (posedge clock)
+        cycle <= cycle + 1;
+
+    // Clock generation
+    always #(CLOCKPERIOD / 2) clock <= ~clock;
+
+	
+`ifdef IVERILOG
+    initial $dumpfile("vcdbasic.vcd");
+    initial $dumpvars();
+`endif
+
+// VCS
+`ifdef VCS
+    initial $vcdpluson;
+`endif
+
+// Altera Modelsim
+`ifdef MODEL_TECH
+`endif
+
+// Xilinx ISIM
+`ifdef XILINX_ISIM
+`endif
+endmodule
