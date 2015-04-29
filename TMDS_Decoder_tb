@@ -1,4 +1,4 @@
-`include "tmds_encoder.v"
+//`include "tmds_decoder.v"
 /*
 ----------------------------------------
 Stereoscopic Vision System
@@ -14,44 +14,56 @@ Description:
 module tmds_decoder_tb;
 
 	reg clk,rst; reg[9:0] datain;
-	wire [7:0] tmdsout; wire [1:0] crtl; wire de; 
+	wire [7:0] tmdsout; wire [1:0] ctrl; wire de; 
 	reg [15:0] cycle;
 	 
 	 
-	 tmds_decoder #() tmds_decoder (.clk(clock), .reset(reset), .data(dat), .de(dataen), .data(data), .crtl(crtl) .tmds(tmds));
+	 tmds_decoder #() tmds_decoder (.clk(clk), .rst(rst), .datain(datain), .de(de),.tmdsout(tmdsout) ,.ctrl(ctrl));
 
 	initial
 		begin
 		
 		cycle <= 0;
-        reset <= 1'b0;
+        rst <= 1'b0;
         datain <= 10'b0000000000;
 		
-       
+       end
 
-
-
-	initial
-	begin
+		always
+		#5 clk=!clk;
 		
-		$monitor("%t, CYCLE: %d,  DATAIN: %b, TMDSOUT: %b, CTRL: %b, DE: %b", $realtime, cycle, datain, tmdsout, crtl,de);
+		always @ (posedge clk)
+        cycle <= cycle + 1;
+
+	initial begin
+		
+		$monitor("%t, CYCLE: %d,  DATAIN: %b, TMDSOUT: %b, CTRL: %b, DE: %b", $realtime, cycle, datain, tmdsout, ctrl,de);
 	
-		#1
-        reset <= 1'b1;
+		    #1
+        rst <= 1'b1;
 
         // Initial clock setting
         #10
-        clock <= 1'b0;
+        clk <= 1'b0;
 	
         #10 datain <= 10'b1101010100;
         #10 datain <= 10'b0010101011;
         #10 datain <= 10'b0101010100;
         #10 datain <= 10'b1010101011;
-        #10 datain <= 2'b00000000000;
+        #10 datain <= 10'b0000000000;
+        #10 datain <= 10'b0000000000;
+        #10 datain <= 10'b0010010100;
+        #10 datain <= 10'b1000010010;
+        #10 datain <= 10'b0000100011;
+        #10 datain <= 10'b0001111111;
+        #10 datain <= 10'b1111111111;
+        #10 datain <= 10'b1110000001;
 		
         #100 $finish;
     end
-
+	
+endmodule 
+/*
 
     // Cycle Counter
     always @ (posedge clock)
@@ -78,4 +90,4 @@ module tmds_decoder_tb;
 // Xilinx ISIM
 `ifdef XILINX_ISIM
 `endif
-endmodule
+endmodule*/
